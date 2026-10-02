@@ -734,7 +734,7 @@ namespace Garnet.server
                     {
                         // In RESP2, only a small set of commands are allowed while in subscription mode.
                         // RESP3 uses distinct push types for subscription messages, so all commands are valid.
-                        if (commandAdmission != null && cmd != RespCommand.AUTH && cmd != RespCommand.HELLO)
+                        if (commandAdmission != null && cmd != RespCommand.AUTH)
                         {
                             commandAdmission.Admit(cmd, parseState.Count,
                                 new ReadOnlySpan<byte>(recvBufferPtr + _origReadHead, endReadHead - _origReadHead));

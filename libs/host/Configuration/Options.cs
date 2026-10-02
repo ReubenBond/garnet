@@ -886,7 +886,9 @@ namespace Garnet
                 }
                 var credential = new ChainedTokenCredential(
                     new WorkloadIdentityCredential(),
-                    new ManagedIdentityCredential(clientId: AzureStorageManagedIdentity)
+                    new ManagedIdentityCredential(string.IsNullOrEmpty(AzureStorageManagedIdentity)
+                        ? ManagedIdentityId.SystemAssigned
+                        : ManagedIdentityId.FromUserAssignedClientId(AzureStorageManagedIdentity))
                 );
                 return new AzureStorageNamedDeviceFactoryCreator(AzureStorageServiceUri, credential, logger);
             };

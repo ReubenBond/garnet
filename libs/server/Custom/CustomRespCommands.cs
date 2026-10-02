@@ -1,4 +1,4 @@
-// Copyright (c) Microsoft Corporation.
+﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
 
 using System;
@@ -95,7 +95,7 @@ namespace Garnet.server
             var key = parseState.GetArgSliceByRef(0);
 
             var expirationTicks = customRawStringCommand.expirationTicks;
-            var inputArg = expirationTicks > 0 ? DateTimeOffset.UtcNow.Ticks + expirationTicks : expirationTicks;
+            var inputArg = expirationTicks > 0 ? Garnet.server.GarnetExecutionTime.UtcTicks + expirationTicks : expirationTicks;
             var input = new StringInput(cmd, ref parseState, startIdx: 1, arg1: inputArg);
 
             var output = new StringOutput();
@@ -257,7 +257,7 @@ namespace Garnet.server
         {
             ArgumentNullException.ThrowIfNull(customCommand);
 
-            var inputArg = customCommand.expirationTicks > 0 ? DateTimeOffset.UtcNow.Ticks + customCommand.expirationTicks : customCommand.expirationTicks;
+            var inputArg = customCommand.expirationTicks > 0 ? Garnet.server.GarnetExecutionTime.UtcTicks + customCommand.expirationTicks : customCommand.expirationTicks;
             customCommandParseState.InitializeWithArguments(args);
             var cmd = customCommandManagerSession.GetCustomRespCommand(customCommand.id);
             var stringInput = new StringInput(cmd, ref customCommandParseState, arg1: inputArg);

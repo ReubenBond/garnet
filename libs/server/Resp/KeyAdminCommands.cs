@@ -1,4 +1,4 @@
-// Copyright (c) Microsoft Corporation.
+﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
 
 using System;
@@ -101,7 +101,7 @@ namespace Garnet.server
             StringInput input;
             if (expiry > 0)
             {
-                var inputArg = DateTimeOffset.UtcNow.Ticks + TimeSpan.FromSeconds(expiry).Ticks;
+                var inputArg = Garnet.server.GarnetExecutionTime.UtcTicks + TimeSpan.FromSeconds(expiry).Ticks;
                 input = new StringInput(RespCommand.SETEXNX, ref parseState, arg1: inputArg);
             }
             else

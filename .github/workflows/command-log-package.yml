@@ -1,0 +1,31 @@
+name: Command log execution package
+
+on:
+  push:
+    branches: [rb-scaling-engine]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68
+        with:
+          dotnet-version: 10.0.400
+      - name: Package the execution seam
+        working-directory: ${{ runner.temp }}
+        run: >-
+          dotnet pack "${{ github.workspace }}/libs/host/Garnet.host.csproj"
+          -c Release -p:TargetFrameworks=net10.0
+          -p:PackageVersion=2.2.0-clog-native.1
+          -p:RepositoryUrl=https://github.com/ReubenBond/garnet
+          -o "${{ github.workspace }}/native-packages"
+      - name: Preserve package and provenance
+        uses: actions/upload-artifact@v4
+        with:
+          name: garnet-native-package
+          path: native-packages/*

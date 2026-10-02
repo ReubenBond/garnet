@@ -848,7 +848,7 @@ namespace Garnet.server
         private static bool TryGetAbsoluteExpiryTicks(long expiry, bool highPrecision, out long expiryTicks)
         {
             var ticksPerUnit = highPrecision ? TimeSpan.TicksPerMillisecond : TimeSpan.TicksPerSecond;
-            var currentTicks = DateTimeOffset.UtcNow.Ticks;
+            var currentTicks = Garnet.server.GarnetExecutionTime.UtcTicks;
             if (expiry > (long.MaxValue - currentTicks) / ticksPerUnit)
             {
                 expiryTicks = 0;

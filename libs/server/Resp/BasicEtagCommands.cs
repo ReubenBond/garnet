@@ -1,4 +1,4 @@
-// Copyright (c) Microsoft Corporation.
+﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
 
 using System;
@@ -283,7 +283,7 @@ namespace Garnet.server
         {
             var inputArg = expiry == 0
                 ? 0
-                : DateTimeOffset.UtcNow.Ticks +
+                : Garnet.server.GarnetExecutionTime.UtcTicks +
                   (highPrecision
                       ? TimeSpan.FromMilliseconds(expiry).Ticks
                       : TimeSpan.FromSeconds(expiry).Ticks);

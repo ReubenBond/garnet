@@ -67,6 +67,8 @@ namespace Garnet.server
         public void ResetAllLatencyMetrics() => LatencyMetrics?.ResetAll();
 
         readonly StoreWrapper storeWrapper;
+        readonly IGarnetCommandAdmission commandAdmission;
+        readonly bool trustedExecution;
         internal readonly ScratchBufferBuilder scratchBufferBuilder;
         internal readonly ScratchBufferAllocator scratchBufferAllocator;
 
@@ -277,7 +279,9 @@ namespace Garnet.server
             SubscribeBroker subscribeBroker,
             IGarnetAuthenticator authenticator,
             bool enableScripts,
-            IClusterProvider clusterProvider = null)
+            IClusterProvider clusterProvider = null,
+            IGarnetCommandAdmission commandAdmission = null,
+            bool trustedExecution = false)
             : base(networkSender)
         {
             this.customCommandManagerSession = new CustomCommandManagerSession(storeWrapper.customCommandManager);
@@ -302,6 +306,8 @@ namespace Garnet.server
             this.parseStateShrinkThreshold = storeWrapper.serverOptions.GetSessionParseStateMaxRetainedArgs();
 
             this.storeWrapper = storeWrapper;
+            this.commandAdmission = commandAdmission;
+            this.trustedExecution = trustedExecution;
             this.subscribeBroker = subscribeBroker;
             this._authenticator = authenticator ?? storeWrapper.serverOptions.AuthSettings?.CreateAuthenticator(this.storeWrapper) ?? new GarnetNoAuthAuthenticator();
 
@@ -724,11 +730,16 @@ namespace Garnet.server
                 {
                     var noScriptPassed = true;
 
-                    if (CheckACLPermissions(cmd) && (noScriptPassed = CheckScriptPermissions(cmd)))
+                    if (trustedExecution || CheckACLPermissions(cmd) && (noScriptPassed = CheckScriptPermissions(cmd)))
                     {
                         // In RESP2, only a small set of commands are allowed while in subscription mode.
                         // RESP3 uses distinct push types for subscription messages, so all commands are valid.
-                        if (isSubscriptionSession && respProtocolVersion == 2 && !cmd.IsAllowedInSubscriptionMode())
+                        if (commandAdmission != null && cmd != RespCommand.AUTH && cmd != RespCommand.HELLO)
+                        {
+                            commandAdmission.Admit(cmd, parseState.Count,
+                                new ReadOnlySpan<byte>(recvBufferPtr + _origReadHead, endReadHead - _origReadHead));
+                        }
+                        else if (isSubscriptionSession && respProtocolVersion == 2 && !cmd.IsAllowedInSubscriptionMode())
                         {
                             while (!RespWriteUtils.TryWriteError(string.Format(CmdStrings.GenericPubSubCommandNotAllowed, cmd.ToString()), ref dcurr, dend))
                                 SendAndReset();

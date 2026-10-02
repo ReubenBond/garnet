@@ -1,8 +1,11 @@
 // Licensed under the MIT license.
 
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 using Garnet.server;
 using Microsoft.Extensions.Logging;
+using Tsavorite.core;
 
 namespace Garnet
 {
@@ -17,6 +20,20 @@ namespace Garnet
 
         /// <summary>Creates an isolated command admission and execution session.</summary>
         public GarnetEmbeddedSession CreateSession() => new(storeWrapper);
+
+        /// <summary>Captures the complete engine at an application-owned stable execution boundary.</summary>
+        public async ValueTask<Guid> CaptureCheckpointAsync(CancellationToken cancellationToken = default)
+        {
+            var checkpoint = await storeWrapper.store.TakeFullCheckpointAsync(
+                CheckpointType.Snapshot, cancellationToken).ConfigureAwait(false);
+            if (!checkpoint.success)
+                throw new InvalidOperationException("The engine could not initiate its full checkpoint.");
+            return checkpoint.token;
+        }
+
+        /// <summary>Restores the exact full checkpoint selected by the application.</summary>
+        public ValueTask<long> RestoreCheckpointAsync(Guid token, CancellationToken cancellationToken = default) =>
+            storeWrapper.store.RecoverAsync(token, token, cancellationToken: cancellationToken);
 
         private static GarnetServerOptions Validate(GarnetServerOptions options)
         {

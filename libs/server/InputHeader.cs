@@ -152,7 +152,7 @@ namespace Garnet.server
         internal readonly unsafe bool CheckExpiry(long expireTime)
             => (flags & RespInputFlags.Deterministic) != 0
                 ? (flags & RespInputFlags.Expired) != 0
-                : expireTime < DateTimeOffset.Now.UtcTicks;
+                : expireTime < Garnet.common.GarnetExecutionTime.UtcTicks;
 
         /// <summary>
         /// Check the SetGet flag

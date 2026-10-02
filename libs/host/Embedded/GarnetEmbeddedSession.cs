@@ -14,7 +14,6 @@ namespace Garnet
     /// </summary>
     public sealed unsafe class GarnetEmbeddedSession : IDisposable
     {
-        private readonly StoreWrapper store;
         private readonly CaptureSender sender = new();
         private readonly RespServerSession execution;
         private readonly CommandCapture capture = new();
@@ -24,7 +23,6 @@ namespace Garnet
 
         internal GarnetEmbeddedSession(StoreWrapper store)
         {
-            this.store = store;
             execution = new RespServerSession(0, sender, store, null, null, false, trustedExecution: true);
             parser = new RespServerSession(0, admissionOutput, store, null, null, false, commandAdmission: capture);
         }

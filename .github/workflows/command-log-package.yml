@@ -21,13 +21,13 @@ jobs:
         run: >-
           dotnet build "${{ github.workspace }}/libs/host/Garnet.host.csproj"
           -c Release -p:TargetFrameworks=net10.0
-          -p:PackageVersion=2.2.0-clog-native.5
+          -p:PackageVersion=2.2.0-clog-native.6
       - name: Package the compiled execution seam
         working-directory: ${{ runner.temp }}
         run: >-
           dotnet pack "${{ github.workspace }}/libs/host/Garnet.host.csproj"
           -c Release --no-build -p:TargetFrameworks=net10.0
-          -p:PackageVersion=2.2.0-clog-native.5
+          -p:PackageVersion=2.2.0-clog-native.6
           -p:RepositoryUrl=https://github.com/ReubenBond/garnet
           -o "${{ github.workspace }}/native-packages"
       - name: Preserve package and provenance

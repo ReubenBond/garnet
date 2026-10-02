@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using Garnet.common;
 using Garnet.networking;
 using Garnet.server;
+using Tsavorite.core;
 
 namespace Garnet
 {
@@ -40,7 +41,7 @@ namespace Garnet
                 throw new ArgumentException("Admission requires exactly one complete command.", nameof(request));
             return capture.Count == 1
                 ? new GarnetPreparedCommand(capture.Command, capture.Arguments, capture.Request, [])
-                : new GarnetPreparedCommand(RespCommand.INVALID, 0, [], admissionOutput.GetResult());
+                : new GarnetPreparedCommand(RespCommand.INVALID, [], [], admissionOutput.GetResult());
         }
 
         /// <summary>Executes committed RESP bytes, including a complete transaction group.</summary>
@@ -80,14 +81,16 @@ namespace Garnet
         {
             internal int Count;
             internal RespCommand Command;
-            internal int Arguments;
+            internal ReadOnlyMemory<byte>[] Arguments;
             internal byte[] Request;
 
-            public void Admit(RespCommand command, int argumentCount, ReadOnlySpan<byte> encodedCommand)
+            public void Admit(RespCommand command, ReadOnlySpan<PinnedSpanByte> arguments, ReadOnlySpan<byte> encodedCommand)
             {
                 Count++;
                 Command = command;
-                Arguments = argumentCount;
+                Arguments = new ReadOnlyMemory<byte>[arguments.Length];
+                for (var index = 0; index < arguments.Length; index++)
+                    Arguments[index] = arguments[index].ReadOnlySpan.ToArray();
                 Request = encodedCommand.ToArray();
             }
         }

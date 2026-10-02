@@ -1,6 +1,7 @@
 // Licensed under the MIT license.
 
 using System;
+using Tsavorite.core;
 
 namespace Garnet.server
 {
@@ -11,6 +12,6 @@ namespace Garnet.server
     public interface IGarnetCommandAdmission
     {
         /// <summary>Captures a complete RESP command for later execution.</summary>
-        void Admit(RespCommand command, int argumentCount, ReadOnlySpan<byte> encodedCommand);
+        void Admit(RespCommand command, ReadOnlySpan<PinnedSpanByte> arguments, ReadOnlySpan<byte> encodedCommand);
     }
 }

@@ -21,7 +21,8 @@ namespace Garnet
         private readonly RespServerSession parser;
         private bool disposed;
 
-        internal GarnetEmbeddedSession(StoreWrapper store)
+        /// <summary>Creates a session over an embedded server's store.</summary>
+        public GarnetEmbeddedSession(StoreWrapper store)
         {
             execution = new RespServerSession(0, sender, store, null, null, false, trustedExecution: true);
             parser = new RespServerSession(0, admissionOutput, store, null, null, false, commandAdmission: capture);

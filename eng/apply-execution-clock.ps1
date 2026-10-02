@@ -9,11 +9,17 @@ $files = @(
     'libs\server\Resp\KeyAdminCommands.cs',
     'libs\server\Storage\Functions\LogRecordUtils.cs',
     'libs\server\Storage\Session\MainStore\MainStoreOps.cs'
+    'libs\server\Storage\Session\UnifiedStore\UnifiedStoreOps.cs',
+    'libs\server\Resp\Objects\HashCommands.cs',
+    'libs\server\Resp\Objects\SortedSetCommands.cs',
+    'libs\common\ConvertUtils.cs'
 )
 foreach ($relative in $files) {
     $path = Join-Path $root $relative
     $content = [System.IO.File]::ReadAllText($path)
-    $updated = $content.Replace('DateTimeOffset.UtcNow.Ticks', 'Garnet.server.GarnetExecutionTime.UtcTicks')
+    $updated = $content.Replace('Garnet.server.GarnetExecutionTime.UtcTicks', 'Garnet.common.GarnetExecutionTime.UtcTicks')
+    $updated = $updated.Replace('DateTimeOffset.UtcNow.Ticks', 'Garnet.common.GarnetExecutionTime.UtcTicks')
+    $updated = $updated.Replace('DateTimeOffset.UtcNow', 'Garnet.common.GarnetExecutionTime.UtcNow')
     if ($updated -ne $content) {
         [System.IO.File]::WriteAllText($path, $updated, [System.Text.UTF8Encoding]::new($true))
     }

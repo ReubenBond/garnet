@@ -26,7 +26,7 @@ namespace Garnet.common
             long seconds = -1;
             if (ticks > 0)
             {
-                ticks -= DateTimeOffset.UtcNow.Ticks;
+                ticks -= Garnet.common.GarnetExecutionTime.UtcTicks;
                 seconds = ticks > 0 ? (ticks + TimeSpan.TicksPerSecond / 2) / TimeSpan.TicksPerSecond : -1;
             }
             return seconds;
@@ -43,7 +43,7 @@ namespace Garnet.common
             long milliseconds = -1;
             if (ticks > 0)
             {
-                ticks -= DateTimeOffset.UtcNow.Ticks;
+                ticks -= Garnet.common.GarnetExecutionTime.UtcTicks;
                 milliseconds = ticks > 0 ? ticks / TimeSpan.TicksPerMillisecond : -1;
             }
             return milliseconds;

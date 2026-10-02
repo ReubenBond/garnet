@@ -196,7 +196,7 @@ namespace Garnet.server
                 if (hasExpiration)
                 {
                     expiration = reader.ReadInt64();
-                    canAddItem = expiration >= Garnet.server.GarnetExecutionTime.UtcTicks;
+                    canAddItem = expiration >= Garnet.common.GarnetExecutionTime.UtcTicks;
                 }
 
                 if (canAddItem)
@@ -238,7 +238,7 @@ namespace Garnet.server
         {
             get
             {
-                if (!HasExpirableItems() || (expirationQueue.TryPeek(out _, out var expiration) && expiration > Garnet.server.GarnetExecutionTime.UtcTicks))
+                if (!HasExpirableItems() || (expirationQueue.TryPeek(out _, out var expiration) && expiration > Garnet.common.GarnetExecutionTime.UtcTicks))
                 {
                     return sortedSetDict;
                 }
@@ -269,7 +269,7 @@ namespace Garnet.server
 
             // Both passes share a single timestamp so they agree on exactly which members are expired; otherwise a
             // member could expire between them and the declared count would not match the entries written.
-            var now = Garnet.server.GarnetExecutionTime.UtcTicks;
+            var now = Garnet.common.GarnetExecutionTime.UtcTicks;
             var expirations = expirationTimes;
 
             var count = sortedSetDict.Count;
@@ -623,7 +623,7 @@ namespace Garnet.server
         /// <param name="key">The key to check for expiration.</param>
         /// <returns>True if the key is expired; otherwise, false.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool IsExpired(byte[] key) => expirationTimes is not null && expirationTimes.TryGetValue(key, out var expiration) && expiration < Garnet.server.GarnetExecutionTime.UtcTicks;
+        public bool IsExpired(byte[] key) => expirationTimes is not null && expirationTimes.TryGetValue(key, out var expiration) && expiration < Garnet.common.GarnetExecutionTime.UtcTicks;
 
         /// <summary>
         /// Determines whether the sorted set has expirable items.
@@ -683,7 +683,7 @@ namespace Garnet.server
 
         private void DeleteExpiredItemsWorker()
         {
-            while (expirationQueue.TryPeek(out var key, out var expiration) && expiration < Garnet.server.GarnetExecutionTime.UtcTicks)
+            while (expirationQueue.TryPeek(out var key, out var expiration) && expiration < Garnet.common.GarnetExecutionTime.UtcTicks)
             {
                 if (expirationTimes.TryGetValue(key, out var actualExpiration) && actualExpiration == expiration)
                 {
@@ -715,7 +715,7 @@ namespace Garnet.server
             if (!sortedSetDict.ContainsKey(key))
                 return (int)SortedSetExpireResult.KeyNotFound;
 
-            if (expiration <= Garnet.server.GarnetExecutionTime.UtcTicks)
+            if (expiration <= Garnet.common.GarnetExecutionTime.UtcTicks)
             {
                 _ = sortedSetDict.Remove(key, out var value);
                 _ = sortedSet.Remove((value, key));

@@ -283,7 +283,7 @@ namespace Garnet.server
         {
             var inputArg = expiry == 0
                 ? 0
-                : Garnet.server.GarnetExecutionTime.UtcTicks +
+                : Garnet.common.GarnetExecutionTime.UtcTicks +
                   (highPrecision
                       ? TimeSpan.FromMilliseconds(expiry).Ticks
                       : TimeSpan.FromSeconds(expiry).Ticks);

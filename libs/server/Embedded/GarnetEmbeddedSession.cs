@@ -3,6 +3,7 @@
 using System;
 using System.Buffers;
 using System.Runtime.InteropServices;
+using Garnet.common;
 using Garnet.networking;
 using Garnet.server;
 

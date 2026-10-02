@@ -16,6 +16,6 @@ namespace Garnet.server
         /// <returns>True if the log record has expired; otherwise, false.</returns>
         internal static bool CheckExpiry<TSourceLogRecord>(in TSourceLogRecord srcLogRecord)
             where TSourceLogRecord : ISourceLogRecord
-            => srcLogRecord.DataHeader.HasExpiration && srcLogRecord.Expiration < Garnet.server.GarnetExecutionTime.UtcTicks;
+            => srcLogRecord.DataHeader.HasExpiration && srcLogRecord.Expiration < Garnet.common.GarnetExecutionTime.UtcTicks;
     }
 }

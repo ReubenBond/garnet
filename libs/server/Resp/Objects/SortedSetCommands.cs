@@ -1783,8 +1783,8 @@ namespace Garnet.server
             // Convert to expiration time in ticks
             var expirationTimeInTicks = command switch
             {
-                RespCommand.ZEXPIRE => DateTimeOffset.UtcNow.AddSeconds(expiration).UtcTicks,
-                RespCommand.ZPEXPIRE => DateTimeOffset.UtcNow.AddMilliseconds(expiration).UtcTicks,
+                RespCommand.ZEXPIRE => Garnet.common.GarnetExecutionTime.UtcNow.AddSeconds(expiration).UtcTicks,
+                RespCommand.ZPEXPIRE => Garnet.common.GarnetExecutionTime.UtcNow.AddMilliseconds(expiration).UtcTicks,
                 RespCommand.ZEXPIREAT => ConvertUtils.UnixTimestampInSecondsToTicks(expiration),
                 _ => ConvertUtils.UnixTimestampInMillisecondsToTicks(expiration)
             };

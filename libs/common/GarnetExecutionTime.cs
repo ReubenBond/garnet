@@ -2,7 +2,7 @@
 
 using System;
 
-namespace Garnet.server
+namespace Garnet.common
 {
     /// <summary>
     /// Supplies command execution time to synchronous embedded engine operations.
@@ -13,7 +13,10 @@ namespace Garnet.server
         private static TimeProvider current;
 
         /// <summary>Gets the current execution time in UTC ticks.</summary>
-        public static long UtcTicks => (current ?? TimeProvider.System).GetUtcNow().UtcTicks;
+        public static long UtcTicks => UtcNow.UtcTicks;
+
+        /// <summary>Gets the current command's UTC execution time.</summary>
+        public static DateTimeOffset UtcNow => (current ?? TimeProvider.System).GetUtcNow();
 
         /// <summary>Enters a synchronous command's execution clock scope.</summary>
         public static Scope Enter(TimeProvider timeProvider)

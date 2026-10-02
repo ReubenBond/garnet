@@ -149,7 +149,7 @@ namespace Garnet.server
                             return AbortWithErrorMessage(CmdStrings.RESP_ERR_GENERIC_INVALIDEXP_IN_GETEX);
                         }
 
-                        tsExpiry = DateTimeOffset.FromUnixTimeSeconds(expireTime) - (now = DateTimeOffset.UtcNow);
+                        tsExpiry = DateTimeOffset.FromUnixTimeSeconds(expireTime) - (now = Garnet.common.GarnetExecutionTime.UtcNow);
                     }
                     else if (option.EqualsUpperCaseSpanIgnoringCase(CmdStrings.PXAT))
                     {
@@ -158,7 +158,7 @@ namespace Garnet.server
                             return AbortWithErrorMessage(CmdStrings.RESP_ERR_GENERIC_INVALIDEXP_IN_GETEX);
                         }
 
-                        tsExpiry = DateTimeOffset.FromUnixTimeMilliseconds(expireTime) - (now = DateTimeOffset.UtcNow);
+                        tsExpiry = DateTimeOffset.FromUnixTimeMilliseconds(expireTime) - (now = Garnet.common.GarnetExecutionTime.UtcNow);
                     }
                     else
                     {
@@ -172,7 +172,7 @@ namespace Garnet.server
                 }
             }
 
-            var expiry = (tsExpiry.HasValue && tsExpiry.Value.Ticks > 0) ? (now ?? DateTimeOffset.UtcNow).Ticks + tsExpiry.Value.Ticks : 0;
+            var expiry = (tsExpiry.HasValue && tsExpiry.Value.Ticks > 0) ? (now ?? Garnet.common.GarnetExecutionTime.UtcNow).Ticks + tsExpiry.Value.Ticks : 0;
             if (expiry < 0)
             {
                 return AbortWithErrorMessage(CmdStrings.RESP_ERR_OVERFLOWEXP_IN_GETEX);
@@ -848,7 +848,7 @@ namespace Garnet.server
         private static bool TryGetAbsoluteExpiryTicks(long expiry, bool highPrecision, out long expiryTicks)
         {
             var ticksPerUnit = highPrecision ? TimeSpan.TicksPerMillisecond : TimeSpan.TicksPerSecond;
-            var currentTicks = Garnet.server.GarnetExecutionTime.UtcTicks;
+            var currentTicks = Garnet.common.GarnetExecutionTime.UtcTicks;
             if (expiry > (long.MaxValue - currentTicks) / ticksPerUnit)
             {
                 expiryTicks = 0;
@@ -1531,7 +1531,7 @@ namespace Garnet.server
                 return AbortWithWrongNumberOfArguments(nameof(RespCommand.TIME));
             }
 
-            var utcTime = DateTimeOffset.UtcNow;
+            var utcTime = Garnet.common.GarnetExecutionTime.UtcNow;
             var seconds = utcTime.ToUnixTimeSeconds();
             var uSeconds = utcTime.ToString("ffffff");
             var response = $"*2\r\n${seconds.ToString().Length}\r\n{seconds}\r\n${uSeconds.Length}\r\n{uSeconds}\r\n";

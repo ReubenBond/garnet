@@ -125,7 +125,7 @@ namespace Garnet.server
                 if (hasExpiration)
                 {
                     var expiration = reader.ReadInt64();
-                    var isExpired = expiration < Garnet.server.GarnetExecutionTime.UtcTicks;
+                    var isExpired = expiration < Garnet.common.GarnetExecutionTime.UtcTicks;
                     if (!isExpired)
                     {
                         hash.Add(item, value);
@@ -176,7 +176,7 @@ namespace Garnet.server
 
             // Both passes share a single timestamp so they agree on exactly which fields are expired; otherwise a
             // field could expire between them and the declared count would not match the entries written.
-            var now = Garnet.server.GarnetExecutionTime.UtcTicks;
+            var now = Garnet.common.GarnetExecutionTime.UtcTicks;
             var expirations = expirationTimes;
 
             var count = hash.Count;
@@ -428,10 +428,10 @@ namespace Garnet.server
 
 #if NET9_0_OR_GREATER
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private bool IsExpired(ReadOnlySpan<byte> key) => HasExpirableItems && expirationTimeSpanLookup.TryGetValue(key, out var expiration) && expiration < Garnet.server.GarnetExecutionTime.UtcTicks;
+        private bool IsExpired(ReadOnlySpan<byte> key) => HasExpirableItems && expirationTimeSpanLookup.TryGetValue(key, out var expiration) && expiration < Garnet.common.GarnetExecutionTime.UtcTicks;
 #else
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private bool IsExpired(byte[] key) => HasExpirableItems && expirationTimes.TryGetValue(key, out var expiration) && expiration < Garnet.server.GarnetExecutionTime.UtcTicks;
+        private bool IsExpired(byte[] key) => HasExpirableItems && expirationTimes.TryGetValue(key, out var expiration) && expiration < Garnet.common.GarnetExecutionTime.UtcTicks;
 #endif
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -445,7 +445,7 @@ namespace Garnet.server
         private void DeleteExpiredItemsWorker()
         {
             // The PQ is ordered such that oldest items are dequeued first
-            while (expirationQueue.TryPeek(out var key, out var expiration) && expiration < Garnet.server.GarnetExecutionTime.UtcTicks)
+            while (expirationQueue.TryPeek(out var key, out var expiration) && expiration < Garnet.common.GarnetExecutionTime.UtcTicks)
             {
                 // expirationTimes and expirationQueue will be out of sync when user is updating the expire time of key which already has some TTL.
                 // PriorityQueue Doesn't have update option, so we will just enqueue the new expiration and already treat expirationTimes as the source of truth
@@ -570,7 +570,7 @@ namespace Garnet.server
 #endif
                 return ExpireResult.KeyNotFound;
 
-            if (expiration <= Garnet.server.GarnetExecutionTime.UtcTicks)
+            if (expiration <= Garnet.common.GarnetExecutionTime.UtcTicks)
             {
                 _ = Remove(key, out _);
                 return ExpireResult.KeyAlreadyExpired;

@@ -101,7 +101,7 @@ namespace Garnet.server
             StringInput input;
             if (expiry > 0)
             {
-                var inputArg = Garnet.server.GarnetExecutionTime.UtcTicks + TimeSpan.FromSeconds(expiry).Ticks;
+                var inputArg = Garnet.common.GarnetExecutionTime.UtcTicks + TimeSpan.FromSeconds(expiry).Ticks;
                 input = new StringInput(RespCommand.SETEXNX, ref parseState, arg1: inputArg);
             }
             else
@@ -420,8 +420,8 @@ namespace Garnet.server
             // Convert to expiration time in ticks
             var expirationTimeInTicks = command switch
             {
-                RespCommand.EXPIRE => DateTimeOffset.UtcNow.AddSeconds(expiration).UtcTicks,
-                RespCommand.PEXPIRE => DateTimeOffset.UtcNow.AddMilliseconds(expiration).UtcTicks,
+                RespCommand.EXPIRE => Garnet.common.GarnetExecutionTime.UtcNow.AddSeconds(expiration).UtcTicks,
+                RespCommand.PEXPIRE => Garnet.common.GarnetExecutionTime.UtcNow.AddMilliseconds(expiration).UtcTicks,
                 RespCommand.EXPIREAT => ConvertUtils.UnixTimestampInSecondsToTicks(expiration),
                 _ => ConvertUtils.UnixTimestampInMillisecondsToTicks(expiration)
             };
